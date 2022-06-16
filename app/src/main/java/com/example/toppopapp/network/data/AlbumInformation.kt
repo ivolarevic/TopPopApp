@@ -1,4 +1,4 @@
-package com.example.toppopapp
+package com.example.toppopapp.network.data
 
 data class AlbumInformation (
         val songName : String,

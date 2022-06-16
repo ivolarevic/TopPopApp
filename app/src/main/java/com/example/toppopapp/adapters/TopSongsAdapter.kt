@@ -8,9 +8,8 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.toppopapp.R
-import com.example.toppopapp.TrackInformation
+import com.example.toppopapp.network.data.TrackInformation
 import com.example.toppopapp.InterfaceCard
-
 
 
 class TopSongsAdapter(private var itemsList: List<TrackInformation>, var interfaceCard : InterfaceCard) : RecyclerView.Adapter<TopSongsAdapter.MyViewHolder>() {

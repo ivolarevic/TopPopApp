@@ -2,7 +2,7 @@ package com.example.toppopapp.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.toppopapp.AlbumInformation
+import com.example.toppopapp.network.data.AlbumInformation
 import com.example.toppopapp.network.RequestCompleteListener
 import com.example.toppopapp.network.TracksModel
 import com.example.toppopapp.network.model.Tracks

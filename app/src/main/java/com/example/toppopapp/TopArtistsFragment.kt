@@ -1,40 +1,40 @@
 package com.example.toppopapp
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.toppopapp.adapters.TopSongsAdapter
 import com.example.toppopapp.databinding.FragmentFirstBinding
-import com.example.toppopapp.network.RetrofitService
 import com.example.toppopapp.network.model.Tracks
-import com.example.toppopapp.viewmodel.FirstFragmentViewModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.toppopapp.viewmodel.TopArtistsViewModel
 import androidx.navigation.findNavController
+import com.example.toppopapp.network.RetrofitApiCall
+import com.example.toppopapp.network.data.TrackInformation
 import com.example.toppopapp.viewmodel.SharedViewModel
 
 
-class TopArtists : Fragment(), InterfaceCard {
+class TopArtistsFragment : Fragment(), InterfaceCard {
 
     private var _binding: FragmentFirstBinding? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var customAdapter: TopSongsAdapter
-    private lateinit var viewModel: FirstFragmentViewModel
+
     private val sharedViewModel: SharedViewModel by activityViewModels()
+    private lateinit var artistViewModel: TopArtistsViewModel
+
+    private lateinit var model : RetrofitApiCall
 
     private val binding get() = _binding!!
-    private var apiInterface: Call<Tracks>?= null
     private var songList = ArrayList<TrackInformation>()
-    var swipeRefreshLayout: SwipeRefreshLayout? = null
-    private val NUM_SONGS = 9
+    private var swipeRefreshLayout: SwipeRefreshLayout? = null
 
+    // Flags for sorting
     private var sortAsc:Boolean = false
     private var sortDesc:Boolean = false
     private var sortNorm : Boolean = false
@@ -56,9 +56,26 @@ class TopArtists : Fragment(), InterfaceCard {
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = customAdapter
 
-        initListeners()
-        fetchApi()
+        artistViewModel = ViewModelProvider(this)[TopArtistsViewModel::class.java]
+        model = RetrofitApiCall(requireContext())
+        artistViewModel.getPopularSongsList(model)
 
+        setLiveDataListeners()
+        initListeners()
+    }
+
+    private fun setLiveDataListeners(){
+        artistViewModel.popularSongsLiveData.observe(viewLifecycleOwner, Observer { it
+            showInformation(it)
+        })
+    }
+
+    private fun initListeners(){
+        swipeRefreshLayout!!.setOnRefreshListener {
+            swipeRefreshLayout!!.isRefreshing = false
+            songList.sortBy { it.position }
+            customAdapter.notifyDataSetChanged()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -83,44 +100,20 @@ class TopArtists : Fragment(), InterfaceCard {
             songList.sortBy { it.position }
             sortNorm = false
         }
-
         customAdapter.notifyDataSetChanged()
-
     }
 
-    private fun initListeners(){
-        swipeRefreshLayout!!.setOnRefreshListener {
-            swipeRefreshLayout!!.isRefreshing = false
-            songList.clear()
-            fetchApi()
+    private fun showInformation(body: Tracks){
+        songList.clear()
+        for (i in 0..9){
+            val position = body.data[i].position
+            val songName = body.data[i].title
+            val artistName = body.data[i].artist.name
+            val duration = body.data[i].duration
+
+            songList.add(TrackInformation(position,songName,artistName,duration))
         }
-    }
-
-    // move to firstfragmentviewmodel
-    private fun fetchApi(){
-        apiInterface = RetrofitService.create().getTopSongs()
-        apiInterface!!.enqueue(object : Callback<Tracks> {
-            override fun onResponse(call: Call<Tracks>, response: Response<Tracks>) {
-                if (response.isSuccessful) {
-                    for (i in 0..NUM_SONGS){
-                        showInformation(response.body()!!, i)
-                    }
-                }
-            }
-            override fun onFailure(call: Call<Tracks>, t: Throwable) {
-            }
-        })
-    }
-
-    private fun showInformation(body: Tracks, i: Int){
-        val position = body.data[i].position
-        val songName = body.data[i].title
-        val artistName = body.data[i].artist.name
-        val duration = body.data[i].duration
-
-        songList.add(TrackInformation(position,songName,artistName,duration))
         customAdapter.notifyDataSetChanged()
-
     }
 
     override fun onCardViewClick(view: View, position: Int) {
@@ -132,6 +125,4 @@ class TopArtists : Fragment(), InterfaceCard {
         super.onDestroyView()
         _binding = null
     }
-
-
 }

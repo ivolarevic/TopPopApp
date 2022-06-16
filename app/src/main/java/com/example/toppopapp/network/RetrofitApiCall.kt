@@ -1,6 +1,5 @@
 package com.example.toppopapp.network
 
-import com.example.toppopapp.TrackInformation
 import android.content.Context
 import com.example.toppopapp.network.model.Tracks
 import retrofit2.Call
