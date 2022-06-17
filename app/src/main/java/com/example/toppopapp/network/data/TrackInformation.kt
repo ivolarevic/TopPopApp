@@ -5,4 +5,5 @@ data class TrackInformation(
     val songName: String,
     val artistName: String,
     val duration: Int,
+    val albumId: Long,
 )

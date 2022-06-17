@@ -110,15 +110,17 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
             val songName = body.data[i].title
             val artistName = body.data[i].artist.name
             val duration = body.data[i].duration
+            val albumId = body.data[i].album.id
 
-            songList.add(TrackInformation(position,songName,artistName,duration))
+            songList.add(TrackInformation(position,songName,artistName,duration,albumId))
         }
         customAdapter.notifyDataSetChanged()
     }
 
-    override fun onCardViewClick(view: View, position: Int) {
+    override fun onCardViewClick(view: View, position: Int, albumId: Long) {
         view.findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         sharedViewModel.setIdArtist(position-1)
+        sharedViewModel.setIdAlbum(albumId)
     }
 
     override fun onDestroyView() {

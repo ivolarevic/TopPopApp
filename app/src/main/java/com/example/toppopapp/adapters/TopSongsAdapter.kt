@@ -40,7 +40,7 @@ class TopSongsAdapter(private var itemsList: List<TrackInformation>, var interfa
         holder.songDuration.text = minutes.toString() + ":" + seconds.toString()
 
         holder.card.setOnClickListener{
-            interfaceCard.onCardViewClick(it, item.position)
+            interfaceCard.onCardViewClick(it, item.position, item.albumId)
         }
     }
 
