@@ -6,22 +6,22 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.toppopapp.adapters.TopSongsAdapter
-import com.example.toppopapp.databinding.FragmentFirstBinding
-import com.example.toppopapp.network.model.Tracks
-import com.example.toppopapp.viewmodel.TopArtistsViewModel
-import androidx.navigation.findNavController
+import com.example.toppopapp.databinding.FragmentTopArtistsBinding
 import com.example.toppopapp.network.RetrofitApiCall
 import com.example.toppopapp.network.data.TrackInformation
+import com.example.toppopapp.network.model.Tracks
 import com.example.toppopapp.viewmodel.SharedViewModel
+import com.example.toppopapp.viewmodel.TopArtistsViewModel
 
 
 class TopArtistsFragment : Fragment(), InterfaceCard {
 
-    private var _binding: FragmentFirstBinding? = null
+    private var _binding: FragmentTopArtistsBinding? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var customAdapter: TopSongsAdapter
 
@@ -40,7 +40,7 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
     private var sortNorm : Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        _binding = FragmentFirstBinding.inflate(inflater, container, false)
+        _binding = FragmentTopArtistsBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
         return binding.root
     }
@@ -62,6 +62,10 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
 
         setLiveDataListeners()
         initListeners()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_main, menu)
     }
 
     private fun setLiveDataListeners(){
@@ -105,7 +109,8 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
 
     private fun showInformation(body: Tracks){
         songList.clear()
-        for (i in 0..9){
+        val numberOfArtists = body.total - 1
+        for (i in 0..numberOfArtists){
             val position = body.data[i].position
             val songName = body.data[i].title
             val artistName = body.data[i].artist.name

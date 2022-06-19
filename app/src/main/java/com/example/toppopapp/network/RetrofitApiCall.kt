@@ -2,6 +2,7 @@ package com.example.toppopapp.network
 
 import android.content.Context
 import com.example.toppopapp.network.model.Tracks
+import com.example.toppopapp.network.model.TracksModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

@@ -3,7 +3,7 @@ package com.example.toppopapp.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.toppopapp.network.RequestCompleteListener
-import com.example.toppopapp.network.TracksModel
+import com.example.toppopapp.network.model.TracksModel
 import com.example.toppopapp.network.model.Tracks
 
 class TopArtistsViewModel : ViewModel() {

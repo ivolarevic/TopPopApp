@@ -1,6 +1,6 @@
-package com.example.toppopapp.network
+package com.example.toppopapp.network.model
 
-import com.example.toppopapp.network.model.AlbumDetails
+import com.example.toppopapp.network.RequestCompleteListener
 
 interface AlbumModel {
     fun getAlbumSongs(albumId: String, callback: RequestCompleteListener<AlbumDetails>)

@@ -1,12 +1,13 @@
 package com.example.toppopapp.viewmodel
 
 import android.util.Log
+import android.widget.ProgressBar
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.toppopapp.network.AlbumModel
+import com.example.toppopapp.network.model.AlbumModel
 import com.example.toppopapp.network.data.AlbumInformation
 import com.example.toppopapp.network.RequestCompleteListener
-import com.example.toppopapp.network.TracksModel
+import com.example.toppopapp.network.model.TracksModel
 import com.example.toppopapp.network.model.AlbumDetails
 import com.example.toppopapp.network.model.Tracks
 
@@ -14,7 +15,6 @@ class SharedViewModel : ViewModel() {
 
     val idArtist = MutableLiveData<Int>()
     val idAlbum = MutableLiveData<Long>()
-
     var albumDetails = MutableLiveData<AlbumInformation>()
     val albumTracks = MutableLiveData<AlbumDetails>()
 
@@ -37,7 +37,6 @@ class SharedViewModel : ViewModel() {
                 )
                 albumDetails.postValue(details)
             }
-
             override fun onRequestFailed(errorMessage: String) {
                 TODO("Not yet implemented")
             }

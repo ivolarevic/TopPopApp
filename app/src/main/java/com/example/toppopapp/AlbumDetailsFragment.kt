@@ -1,14 +1,12 @@
 package com.example.toppopapp
 
+import android.R
 import android.os.Bundle
-import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import com.example.toppopapp.databinding.FragmentSecondBinding
+import com.example.toppopapp.databinding.FragmentAlbumDetailsBinding
 import com.example.toppopapp.network.RetrofitApiAlbumCall
 import com.example.toppopapp.network.RetrofitApiCall
 import com.example.toppopapp.network.data.AlbumInformation
@@ -16,9 +14,10 @@ import com.example.toppopapp.network.model.AlbumDetails
 import com.example.toppopapp.viewmodel.SharedViewModel
 import com.squareup.picasso.Picasso
 
+
 class AlbumDetailsFragment : Fragment() {
 
-    private var _binding: FragmentSecondBinding? = null
+    private var _binding: FragmentAlbumDetailsBinding? = null
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private lateinit var model : RetrofitApiCall
     private lateinit var modelTracks :  RetrofitApiAlbumCall
@@ -26,9 +25,9 @@ class AlbumDetailsFragment : Fragment() {
     private val binding get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        _binding = FragmentSecondBinding.inflate(inflater, container, false)
-        setHasOptionsMenu(false)
+        _binding = FragmentAlbumDetailsBinding.inflate(inflater, container, false)
 
+        setHasOptionsMenu(false)
         setLiveDataListeners()
 
         model =  RetrofitApiCall(requireContext())
@@ -38,7 +37,6 @@ class AlbumDetailsFragment : Fragment() {
         sharedViewModel.getAlbumDetails(model)
 
         return binding.root
-
     }
 
     private fun setLiveDataListeners(){
@@ -53,7 +51,6 @@ class AlbumDetailsFragment : Fragment() {
         })
 
         sharedViewModel.albumTracks.observe(viewLifecycleOwner, Observer{
-            Log.d("usao", it.toString())
             setTrackInformation(it)
         })
     }
@@ -63,16 +60,16 @@ class AlbumDetailsFragment : Fragment() {
         binding.albumName.text = data.albumName
         binding.albumSongName.text = data.songName
         val coverUrl : String = data.cover
-
         Picasso.get().load(coverUrl).into(binding.cover)
     }
 
     private fun setTrackInformation(data: AlbumDetails){
         val listOfSongs = ArrayList<String>()
-        for (i in 0.. data.numberOfTracks-1){
+        val songsNumber = data.numberOfTracks-1
+
+        for (i in 0..songsNumber){
             var song = data.tracks.data[i].title + " "
             listOfSongs.add(song)
-
         }
         binding.songs.text = listOfSongs.toString().replace("[", "").replace("]", "");
     }

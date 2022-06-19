@@ -29,7 +29,6 @@ class TopSongsAdapter(private var itemsList: List<TrackInformation>, var interfa
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val item = itemsList[position]
-
         holder.artistName.text = item.artistName
         holder.songName.text = item.songName
         holder.songNumber.text = item.position.toString()
@@ -38,7 +37,6 @@ class TopSongsAdapter(private var itemsList: List<TrackInformation>, var interfa
         val seconds: Int = item.duration % 60
 
         holder.songDuration.text = minutes.toString() + ":" + seconds.toString()
-
         holder.card.setOnClickListener{
             interfaceCard.onCardViewClick(it, item.position, item.albumId)
         }

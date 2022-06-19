@@ -9,6 +9,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.content.ContextCompat
 import com.example.toppopapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -28,13 +29,8 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
+        window.statusBarColor = ContextCompat.getColor(this, R.color.secondaryDarkColor)
 
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
     }
 
     override fun onSupportNavigateUp(): Boolean {
