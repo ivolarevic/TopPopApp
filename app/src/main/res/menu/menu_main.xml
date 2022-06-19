@@ -3,8 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.toppopapp.MainActivity">
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:id="@+id/action_asc"
+        android:title="@string/asc_sort"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_arrow_downward_24"
+        />
+    <item
+        android:id="@+id/action_desc"
+        android:title="@string/desc_sort"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_arrow_upward_24"
+        />
+    <item
+        android:id="@+id/action_normal"
+        android:title="@string/normal_sort"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_sort_24"
+        />
 </menu>
