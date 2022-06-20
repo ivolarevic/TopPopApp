@@ -1,6 +1,7 @@
 package com.example.toppopapp.adapters
 
 import android.annotation.SuppressLint
+import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,17 +27,13 @@ class TopSongsAdapter(private var itemsList: List<TrackInformation>, var interfa
         return MyViewHolder(itemView)
     }
 
-    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val item = itemsList[position]
         holder.artistName.text = item.artistName
         holder.songName.text = item.songName
         holder.songNumber.text = item.position.toString()
 
-        val minutes:Int = item.duration / 60
-        val seconds: Int = item.duration % 60
-
-        holder.songDuration.text = minutes.toString() + ":" + seconds.toString()
+        holder.songDuration.text = DateUtils.formatElapsedTime(item.duration.toLong())
         holder.card.setOnClickListener{
             interfaceCard.onCardViewClick(it, item.position, item.albumId)
         }

@@ -2,6 +2,7 @@ package com.example.toppopapp
 
 import android.os.Bundle
 import android.view.*
+import android.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -17,6 +18,7 @@ import com.example.toppopapp.network.data.TrackInformation
 import com.example.toppopapp.network.model.Tracks
 import com.example.toppopapp.viewmodel.SharedViewModel
 import com.example.toppopapp.viewmodel.TopArtistsViewModel
+import com.google.android.material.appbar.MaterialToolbar
 
 
 class TopArtistsFragment : Fragment(), InterfaceCard {
@@ -44,6 +46,7 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
         setHasOptionsMenu(true)
         return binding.root
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
