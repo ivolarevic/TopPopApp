@@ -55,11 +55,14 @@
 
             <TextView
                 android:id="@+id/songName"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="32dp"
+                android:text="Song name"
                 android:textColor="@color/secondaryTextColor"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/songnameTextView"
                 app:layout_constraintTop_toBottomOf="@+id/artistName" />
 
@@ -79,7 +82,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="durat"
                 android:textColor="@color/secondaryTextColor"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/textView3"
@@ -102,10 +106,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
                 android:text="@string/duration"
                 android:textColor="@color/secondaryTextColor"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/imageView7"
-                app:layout_constraintTop_toBottomOf="@+id/songnameTextView" />
+                app:layout_constraintTop_toBottomOf="@+id/songName" />
 
             <ImageView
                 android:id="@+id/imageView5"
@@ -133,8 +139,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/songNumber"
-                app:layout_constraintTop_toBottomOf="@+id/imageView6"
+                app:layout_constraintTop_toBottomOf="@+id/songName"
                 app:srcCompat="@drawable/ic_baseline_access_time_24" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
