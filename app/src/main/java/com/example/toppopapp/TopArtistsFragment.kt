@@ -10,11 +10,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.toppopapp.adapters.TopSongsAdapter
 import com.example.toppopapp.databinding.FragmentTopArtistsBinding
 import com.example.toppopapp.network.RetrofitApiCall
+import com.example.toppopapp.network.data.AlbumRoomDatabase
+import com.example.toppopapp.network.data.Artist
+import com.example.toppopapp.network.data.ArtistRoomDatabase
 import com.example.toppopapp.network.model.Data
+import com.example.toppopapp.network.model.TrackInformation
+import com.example.toppopapp.network.model.Tracks
 import com.example.toppopapp.viewmodel.TopArtistsViewModel
 
 
@@ -27,9 +33,11 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
 
     private lateinit var model : RetrofitApiCall
     private val binding get() = _binding!!
-    private var songList : MutableList<Data> = mutableListOf()
+    private var songList = ArrayList<TrackInformation>()
+    private var artistList = ArrayList<TrackInformation>()
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
     lateinit var  sharedPref : SharedPreferences
+    private lateinit var db : ArtistRoomDatabase
 
     // Flags for sorting
     private var sortAsc:Boolean = false
@@ -46,6 +54,11 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
         super.onViewCreated(view, savedInstanceState)
 
         sharedPref = activity?.getSharedPreferences("MyPref", Context.MODE_PRIVATE) ?: return
+
+        db = Room.databaseBuilder(
+            requireContext(),
+            ArtistRoomDatabase::class.java, "artist-database"
+        ).allowMainThreadQueries().build()
 
         swipeRefreshLayout = binding.swipeRefresh
         recyclerView = binding.recyclerView
@@ -107,9 +120,46 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
         customAdapter.notifyDataSetChanged()
     }
 
-    private fun showInformation(data: List<Data>){
+    private fun showInformation(body: Tracks){
+        // Api method
         songList.clear()
-        songList.addAll(data)
+        val numberOfArtists = body.total - 1
+        for (i in 0..numberOfArtists) {
+            val artistID = body.data[i].artist.id
+            val position = body.data[i].position
+            val songName = body.data[i].title
+            val artistName = body.data[i].artist.name
+            val duration = body.data[i].duration
+            val albumId = body.data[i].album.id
+
+            artistList.add(TrackInformation(position, songName, artistName, duration, albumId, artistID))
+            insertArtistToDatabase(artistList)
+            artistList.clear()
+        }
+    }
+
+    private fun insertArtistToDatabase(list : ArrayList<TrackInformation>){
+        // Database method
+        val artist = Artist(
+            position = list[0].position,
+            artistID = list[0].artistId,
+            artistName = list[0].artistName,
+            title = list[0].songName,
+            albumID = list[0].albumId,
+            duration = list[0].duration,
+        )
+        val artistDao = db.artistDao()
+        artistDao.insertArtist(artist)
+
+        val getArtist = artistDao.findArtist(list[0].songName)
+        songList.add(TrackInformation(
+            getArtist.position,
+            getArtist.title,
+            getArtist.artistName!!,
+            getArtist.duration,
+            getArtist.albumID,
+            getArtist.artistID))
+
         customAdapter.notifyDataSetChanged()
     }
 
