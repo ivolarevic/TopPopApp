@@ -15,12 +15,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.toppopapp.adapters.TopSongsAdapter
 import com.example.toppopapp.databinding.FragmentTopArtistsBinding
 import com.example.toppopapp.network.RetrofitApiCall
-import com.example.toppopapp.network.data.Artist
-import com.example.toppopapp.network.data.ArtistDao
-import com.example.toppopapp.network.data.ArtistRoomDatabase
+import com.example.toppopapp.room.Artist
+import com.example.toppopapp.room.ArtistDao
+import com.example.toppopapp.room.ArtistRoomDatabase
 import com.example.toppopapp.network.model.Data
-import com.example.toppopapp.network.model.TrackInformation
-import com.example.toppopapp.network.model.Tracks
 import com.example.toppopapp.viewmodel.TopArtistsViewModel
 
 
@@ -34,11 +32,11 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
     private lateinit var model : RetrofitApiCall
     private val binding get() = _binding!!
     private var artistsList : MutableList<Artist> = mutableListOf()
+    private var artistsTmpList : MutableList<Artist> = mutableListOf()
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
     lateinit var  sharedPref : SharedPreferences
     private lateinit var db : ArtistRoomDatabase
     private lateinit var artistDao : ArtistDao
-    //private lateinit var artists : ArrayList<Artist>
 
     // Flags for sorting
     private var sortAsc:Boolean = false
@@ -135,9 +133,11 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
                 albumID = data[i].album.id,
                 duration = data[i].duration,
             )
-            artistDao.insertArtist(artist)
+            artistsTmpList.addAll(listOf(artist))
         }
+        artistDao.insertArtists(artistsTmpList)
         artistsList.addAll(artistDao.getAllArtists())
+
         customAdapter.notifyDataSetChanged()
     }
 

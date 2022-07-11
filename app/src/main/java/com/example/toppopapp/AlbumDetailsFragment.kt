@@ -10,14 +10,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import com.example.toppopapp.databinding.FragmentAlbumDetailsBinding
 import com.example.toppopapp.network.RetrofitApiCall
-import com.example.toppopapp.network.data.Album
-import com.example.toppopapp.network.data.AlbumRoomDatabase
+import com.example.toppopapp.room.Album
+import com.example.toppopapp.room.AlbumRoomDatabase
 import com.example.toppopapp.network.model.AlbumDetails
-import com.example.toppopapp.network.model.AlbumModel
 import com.example.toppopapp.network.model.Tracks
+import com.example.toppopapp.room.AlbumDao
 import com.example.toppopapp.viewmodel.AlbumDetailsViewModel
 import com.squareup.picasso.Picasso
 
@@ -33,6 +32,7 @@ class AlbumDetailsFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var songs : String
     private lateinit var db : AlbumRoomDatabase
+    private lateinit var albumDao : AlbumDao
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentAlbumDetailsBinding.inflate(inflater, container, false)
@@ -40,12 +40,8 @@ class AlbumDetailsFragment : Fragment() {
         artistID = sharedPref.getInt("artistID", artistID)
         idAlbum = sharedPref.getLong("albumID", idAlbum)
 
-        db = Room.databaseBuilder(
-            requireContext(),
-            AlbumRoomDatabase::class.java, "album-database"
-        ).allowMainThreadQueries().build()
-
         setHasOptionsMenu(false)
+        initDatabase()
         setLiveDataListeners()
 
         model =  RetrofitApiCall()
@@ -53,6 +49,14 @@ class AlbumDetailsFragment : Fragment() {
         albumViewModel.getAlbumDetails(model)
 
         return binding.root
+    }
+
+    private fun initDatabase(){
+        db = Room.databaseBuilder(
+            requireContext(),
+            AlbumRoomDatabase::class.java, "album-database"
+        ).allowMainThreadQueries().build()
+        albumDao = db.albumDao()
     }
 
     private fun setLiveDataListeners(){
@@ -77,12 +81,9 @@ class AlbumDetailsFragment : Fragment() {
 
     private fun setInformation(body: Tracks){
         setDatabaseInformation(body)
-        val albumDao = db.albumDao()
         val album = albumDao.findAlbumById(idAlbum.toString())
-
         val coverUrl : String? = album.coverUrl
         Picasso.get().load(coverUrl).into(binding.cover)
-
         binding.albumArtistName.text = album.artistName
         binding.albumName.text = album.albumName
         binding.albumSongName.text = album.albumSongName
@@ -98,12 +99,12 @@ class AlbumDetailsFragment : Fragment() {
             coverUrl = body.data[artistID].album.cover_medium,
             songsList = songs
         )
-        val albumDao = db.albumDao()
         albumDao.insertAlbum(album)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        db.close()
         _binding = null
     }
 }

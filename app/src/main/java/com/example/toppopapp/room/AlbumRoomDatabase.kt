@@ -1,4 +1,4 @@
-package com.example.toppopapp.network.data
+package com.example.toppopapp.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

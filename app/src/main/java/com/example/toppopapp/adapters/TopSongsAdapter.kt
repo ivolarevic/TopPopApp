@@ -10,7 +10,7 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.toppopapp.R
 import com.example.toppopapp.InterfaceCard
-import com.example.toppopapp.network.data.Artist
+import com.example.toppopapp.room.Artist
 
 
 
