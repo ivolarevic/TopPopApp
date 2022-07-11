@@ -1,15 +1,14 @@
 package com.example.toppopapp.network
 
-import android.content.Context
+import com.example.toppopapp.network.model.AlbumDetails
 import com.example.toppopapp.network.model.Tracks
-import com.example.toppopapp.network.model.TracksModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class RetrofitApiCall (private val context: Context) : TracksModel {
-    override fun getTopSongs(callback: RequestCompleteListener<Tracks>) {
+class RetrofitApiCall () : ApiModel {
 
+    override fun getTopSongs(callback: RequestCompleteListener<Tracks>) {
         val interfaceAPI : RetrofitService = RetrofitService.create()
         val call : Call<Tracks> = interfaceAPI.getTopSongs()
 
@@ -22,6 +21,24 @@ class RetrofitApiCall (private val context: Context) : TracksModel {
                 }
             }
             override fun onFailure(call: Call<Tracks>, t: Throwable) {
+                callback.onRequestFailed(t.localizedMessage!!)
+            }
+        })
+    }
+
+     override fun getAlbumSongs(albumId: String, callback: RequestCompleteListener<AlbumDetails>) {
+        val interfaceAPI : RetrofitService = RetrofitService.create()
+        val call : Call<AlbumDetails> = interfaceAPI.getAlbumSongs(albumId)
+
+        call.enqueue(object : Callback<AlbumDetails> {
+            override fun onResponse(call: Call<AlbumDetails>, response: Response<AlbumDetails>) {
+                if (response.isSuccessful) {
+                    callback.onRequestSuccess(response.body()!!)
+                }else{
+                    callback.onRequestFailed(response.message())
+                }
+            }
+            override fun onFailure(call: Call<AlbumDetails>, t: Throwable) {
                 callback.onRequestFailed(t.localizedMessage!!)
             }
         })

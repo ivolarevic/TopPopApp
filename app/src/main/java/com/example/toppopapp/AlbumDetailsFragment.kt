@@ -1,77 +1,105 @@
 package com.example.toppopapp
 
-import android.R
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import com.example.toppopapp.databinding.FragmentAlbumDetailsBinding
-import com.example.toppopapp.network.RetrofitApiAlbumCall
 import com.example.toppopapp.network.RetrofitApiCall
-import com.example.toppopapp.network.data.AlbumInformation
+import com.example.toppopapp.network.data.Album
+import com.example.toppopapp.network.data.AlbumRoomDatabase
 import com.example.toppopapp.network.model.AlbumDetails
-import com.example.toppopapp.viewmodel.SharedViewModel
+import com.example.toppopapp.network.model.AlbumModel
+import com.example.toppopapp.network.model.Tracks
+import com.example.toppopapp.viewmodel.AlbumDetailsViewModel
 import com.squareup.picasso.Picasso
-
 
 class AlbumDetailsFragment : Fragment() {
 
     private var _binding: FragmentAlbumDetailsBinding? = null
-    private val sharedViewModel: SharedViewModel by activityViewModels()
+    private val albumViewModel : AlbumDetailsViewModel by activityViewModels()
     private lateinit var model : RetrofitApiCall
-    private lateinit var modelTracks :  RetrofitApiAlbumCall
+    lateinit var  sharedPref : SharedPreferences
 
+    private var artistID: Int = 0
+    private var idAlbum: Long = 0
     private val binding get() = _binding!!
+    private lateinit var songs : String
+    private lateinit var db : AlbumRoomDatabase
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentAlbumDetailsBinding.inflate(inflater, container, false)
+        sharedPref = activity?.getSharedPreferences("MyPref", Context.MODE_PRIVATE)!!
+        artistID = sharedPref.getInt("artistID", artistID)
+        idAlbum = sharedPref.getLong("albumID", idAlbum)
+
+        db = Room.databaseBuilder(
+            requireContext(),
+            AlbumRoomDatabase::class.java, "album-database"
+        ).allowMainThreadQueries().build()
 
         setHasOptionsMenu(false)
         setLiveDataListeners()
 
-        model =  RetrofitApiCall(requireContext())
-        modelTracks = RetrofitApiAlbumCall(requireContext())
-
-        sharedViewModel.getAlbumTracks(modelTracks)
-        sharedViewModel.getAlbumDetails(model)
+        model =  RetrofitApiCall()
+        albumViewModel.getAlbumTracks(model)
+        albumViewModel.getAlbumDetails(model)
 
         return binding.root
     }
 
     private fun setLiveDataListeners(){
-        sharedViewModel.idAlbum.observe(viewLifecycleOwner, Observer{
-        })
-
-        sharedViewModel.idArtist.observe(viewLifecycleOwner, Observer {
-        })
-
-        sharedViewModel.albumDetails.observe(viewLifecycleOwner, Observer{
-            setInformation(it)
-        })
-
-        sharedViewModel.albumTracks.observe(viewLifecycleOwner, Observer{
+        albumViewModel.albumTracks.observe(viewLifecycleOwner, Observer{
             setTrackInformation(it)
         })
-    }
 
-    private fun setInformation(data : AlbumInformation){
-        binding.albumArtistName.text = data.artistName
-        binding.albumName.text = data.albumName
-        binding.albumSongName.text = data.songName
-        val coverUrl : String = data.cover
-        Picasso.get().load(coverUrl).into(binding.cover)
+        albumViewModel.albumDetails.observe(viewLifecycleOwner, Observer{
+            setInformation(it)
+        })
     }
 
     private fun setTrackInformation(data: AlbumDetails){
         val listOfSongs = ArrayList<String>()
         val songsNumber = data.numberOfTracks-1
-
         for (i in 0..songsNumber){
             var song = data.tracks.data[i].title + " "
             listOfSongs.add(song)
         }
-        binding.songs.text = listOfSongs.toString().replace("[", "").replace("]", "");
+        songs = listOfSongs.toString().replace("[", "").replace("]", "");
+    }
+
+    private fun setInformation(body: Tracks){
+        setDatabaseInformation(body)
+        val albumDao = db.albumDao()
+        val album = albumDao.findAlbumById(idAlbum.toString())
+
+        val coverUrl : String? = album.coverUrl
+        Picasso.get().load(coverUrl).into(binding.cover)
+
+        binding.albumArtistName.text = album.artistName
+        binding.albumName.text = album.albumName
+        binding.albumSongName.text = album.albumSongName
+        binding.songs.text = album.songsList
+    }
+
+    private fun setDatabaseInformation(body: Tracks){
+        val album = Album(
+            albumID = idAlbum,
+            albumName = body.data[artistID].album.title,
+            artistName = body.data[artistID].artist.name,
+            albumSongName = body.data[artistID].title,
+            coverUrl = body.data[artistID].album.cover_medium,
+            songsList = songs
+        )
+        val albumDao = db.albumDao()
+        albumDao.insertAlbum(album)
     }
 
     override fun onDestroyView() {

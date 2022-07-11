@@ -1,4 +1,4 @@
-package com.example.toppopapp.network.data
+package com.example.toppopapp.network.model
 
 data class TrackInformation(
     val position:Int,
@@ -6,4 +6,5 @@ data class TrackInformation(
     val artistName: String,
     val duration: Int,
     val albumId: Long,
+    val artistId: Long,
 )
