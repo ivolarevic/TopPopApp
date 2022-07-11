@@ -18,6 +18,7 @@ import com.example.toppopapp.network.RetrofitApiCall
 import com.example.toppopapp.network.data.Artist
 import com.example.toppopapp.network.data.ArtistDao
 import com.example.toppopapp.network.data.ArtistRoomDatabase
+import com.example.toppopapp.network.model.Data
 import com.example.toppopapp.network.model.TrackInformation
 import com.example.toppopapp.network.model.Tracks
 import com.example.toppopapp.viewmodel.TopArtistsViewModel
@@ -54,13 +55,6 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
         super.onViewCreated(view, savedInstanceState)
 
         sharedPref = activity?.getSharedPreferences("MyPref", Context.MODE_PRIVATE) ?: return
-
-        db = Room.databaseBuilder(
-            requireContext(),
-            ArtistRoomDatabase::class.java, "artist-database"
-        ).allowMainThreadQueries().build()
-        artistDao = db.artistDao()
-
         swipeRefreshLayout = binding.swipeRefresh
         recyclerView = binding.recyclerView
         artistsList.clear()
@@ -74,6 +68,7 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
         model = RetrofitApiCall()
         artistViewModel.getPopularSongsList(model)
 
+        initDatabase()
         setLiveDataListeners()
         initListeners()
     }
@@ -86,6 +81,14 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
         artistViewModel.popularSongsLiveData.observe(viewLifecycleOwner, Observer { it
             saveInformation(it)
         })
+    }
+
+    private fun initDatabase(){
+        db = Room.databaseBuilder(
+            requireContext(),
+            ArtistRoomDatabase::class.java, "artist-database"
+        ).allowMainThreadQueries().build()
+        artistDao = db.artistDao()
     }
 
     private fun initListeners(){
@@ -121,28 +124,19 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
         customAdapter.notifyDataSetChanged()
     }
 
-    private fun saveInformation(body: Tracks){
+    private fun saveInformation(data: List<Data>){
         artistsList.clear()
-        val numberOfArtists = body.total - 1
-        for (i in 0..numberOfArtists) {
-            val artistID = body.data[i].artist.id
-            val position = body.data[i].position
-            val songName = body.data[i].title
-            val artistName = body.data[i].artist.name
-            val duration = body.data[i].duration
-            val albumId = body.data[i].album.id
-
+        for (i in data.indices) {
             val artist = Artist(
-                position = position,
-                artistID = artistID,
-                artistName = artistName,
-                title = songName,
-                albumID = albumId,
-                duration = duration,
+                position = data[i].position,
+                artistID = data[i].artist.id,
+                artistName = data[i].artist.name,
+                title = data[i].title,
+                albumID = data[i].album.id,
+                duration = data[i].duration,
             )
             artistDao.insertArtist(artist)
         }
-
         artistsList.addAll(artistDao.getAllArtists())
         customAdapter.notifyDataSetChanged()
     }

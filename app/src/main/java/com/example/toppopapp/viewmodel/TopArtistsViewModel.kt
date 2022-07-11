@@ -9,12 +9,12 @@ import com.example.toppopapp.network.model.Tracks
 
 class TopArtistsViewModel : ViewModel() {
 
-    val popularSongsLiveData = MutableLiveData<Tracks>()
+    val popularSongsLiveData = MutableLiveData<List<Data>>()
 
     fun getPopularSongsList(model: ApiModel) {
         model.getTopSongs(object : RequestCompleteListener<Tracks>{
             override fun onRequestSuccess(tracks: Tracks){
-                popularSongsLiveData.postValue(tracks)
+                popularSongsLiveData.postValue(tracks.data)
             }
             override fun onRequestFailed(errorMessage: String) {
             }

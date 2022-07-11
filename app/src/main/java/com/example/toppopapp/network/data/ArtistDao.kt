@@ -10,9 +10,9 @@ interface ArtistDao {
     @Query("SELECT * FROM artist")
     fun getAllArtists(): MutableList<Artist>
 
-    @Query("SELECT * FROM artist WHERE title LIKE (:title) LIMIT 1")
-    fun findArtist(title: String): Artist
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertArtist(vararg artist: Artist)
+
+    /*@Query("SELECT * FROM artist WHERE title LIKE (:title) LIMIT 1")
+    fun findArtist(title: String): Artist*/
 }
