@@ -14,7 +14,7 @@ class TopArtistsViewModel : ViewModel() {
     fun getPopularSongsList(model: ApiModel) {
         model.getTopSongs(object : RequestCompleteListener<Tracks>{
             override fun onRequestSuccess(tracks: Tracks){
-                popularSongsLiveData.value = tracks.data
+                popularSongsLiveData.postValue(tracks.data)
             }
             override fun onRequestFailed(errorMessage: String) {
             }

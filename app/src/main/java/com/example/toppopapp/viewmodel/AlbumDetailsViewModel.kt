@@ -33,7 +33,7 @@ class AlbumDetailsViewModel(application: Application) : AndroidViewModel(applica
                 albumTracks.postValue(data)
             }
             override fun onRequestFailed(errorMessage: String) {
-                Log.d("album", idAlbum.toString())
+                Log.d("error", "retrofit failed")
             }
         })
     }
