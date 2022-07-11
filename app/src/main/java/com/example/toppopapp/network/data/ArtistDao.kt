@@ -8,7 +8,7 @@ import androidx.room.Query
 @Dao
 interface ArtistDao {
     @Query("SELECT * FROM artist")
-    fun getAllArtists(): List<Artist>
+    fun getAllArtists(): MutableList<Artist>
 
     @Query("SELECT * FROM artist WHERE title LIKE (:title) LIMIT 1")
     fun findArtist(title: String): Artist

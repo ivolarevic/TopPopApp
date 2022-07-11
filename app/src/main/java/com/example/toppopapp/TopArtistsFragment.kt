@@ -15,10 +15,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.toppopapp.adapters.TopSongsAdapter
 import com.example.toppopapp.databinding.FragmentTopArtistsBinding
 import com.example.toppopapp.network.RetrofitApiCall
-import com.example.toppopapp.network.data.AlbumRoomDatabase
 import com.example.toppopapp.network.data.Artist
+import com.example.toppopapp.network.data.ArtistDao
 import com.example.toppopapp.network.data.ArtistRoomDatabase
-import com.example.toppopapp.network.model.Data
 import com.example.toppopapp.network.model.TrackInformation
 import com.example.toppopapp.network.model.Tracks
 import com.example.toppopapp.viewmodel.TopArtistsViewModel
@@ -33,11 +32,12 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
 
     private lateinit var model : RetrofitApiCall
     private val binding get() = _binding!!
-    private var songList = ArrayList<TrackInformation>()
-    private var artistList = ArrayList<TrackInformation>()
+    private var artistsList : MutableList<Artist> = mutableListOf()
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
     lateinit var  sharedPref : SharedPreferences
     private lateinit var db : ArtistRoomDatabase
+    private lateinit var artistDao : ArtistDao
+    //private lateinit var artists : ArrayList<Artist>
 
     // Flags for sorting
     private var sortAsc:Boolean = false
@@ -59,11 +59,12 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
             requireContext(),
             ArtistRoomDatabase::class.java, "artist-database"
         ).allowMainThreadQueries().build()
+        artistDao = db.artistDao()
 
         swipeRefreshLayout = binding.swipeRefresh
         recyclerView = binding.recyclerView
-        songList.clear()
-        customAdapter = TopSongsAdapter(songList, this)
+        artistsList.clear()
+        customAdapter = TopSongsAdapter(artistsList, this)
 
         val layoutManager = LinearLayoutManager(context)
         recyclerView.layoutManager = layoutManager
@@ -83,14 +84,14 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
 
     private fun setLiveDataListeners(){
         artistViewModel.popularSongsLiveData.observe(viewLifecycleOwner, Observer { it
-            showInformation(it)
+            saveInformation(it)
         })
     }
 
     private fun initListeners(){
         swipeRefreshLayout!!.setOnRefreshListener {
             swipeRefreshLayout!!.isRefreshing = false
-            songList.sortBy { it.position }
+            artistsList.sortBy { it.position }
             customAdapter.notifyDataSetChanged()
         }
     }
@@ -108,21 +109,20 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
 
     private fun sortSongs(){
         if(sortAsc){
-            songList.sortBy { it.duration }
+            artistsList.sortBy { it.duration }
             sortAsc = false
         }else if(sortDesc){
-            songList.sortByDescending { it.duration }
+            artistsList.sortByDescending { it.duration }
             sortDesc = false
         }else if(sortNorm){
-            songList.sortBy { it.position }
+            artistsList.sortBy { it.position }
             sortNorm = false
         }
         customAdapter.notifyDataSetChanged()
     }
 
-    private fun showInformation(body: Tracks){
-        // Api method
-        songList.clear()
+    private fun saveInformation(body: Tracks){
+        artistsList.clear()
         val numberOfArtists = body.total - 1
         for (i in 0..numberOfArtists) {
             val artistID = body.data[i].artist.id
@@ -132,34 +132,18 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
             val duration = body.data[i].duration
             val albumId = body.data[i].album.id
 
-            artistList.add(TrackInformation(position, songName, artistName, duration, albumId, artistID))
-            insertArtistToDatabase(artistList)
-            artistList.clear()
+            val artist = Artist(
+                position = position,
+                artistID = artistID,
+                artistName = artistName,
+                title = songName,
+                albumID = albumId,
+                duration = duration,
+            )
+            artistDao.insertArtist(artist)
         }
-    }
 
-    private fun insertArtistToDatabase(list : ArrayList<TrackInformation>){
-        // Database method
-        val artist = Artist(
-            position = list[0].position,
-            artistID = list[0].artistId,
-            artistName = list[0].artistName,
-            title = list[0].songName,
-            albumID = list[0].albumId,
-            duration = list[0].duration,
-        )
-        val artistDao = db.artistDao()
-        artistDao.insertArtist(artist)
-
-        val getArtist = artistDao.findArtist(list[0].songName)
-        songList.add(TrackInformation(
-            getArtist.position,
-            getArtist.title,
-            getArtist.artistName!!,
-            getArtist.duration,
-            getArtist.albumID,
-            getArtist.artistID))
-
+        artistsList.addAll(artistDao.getAllArtists())
         customAdapter.notifyDataSetChanged()
     }
 
@@ -174,6 +158,7 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        db.close()
         _binding = null
     }
 }
