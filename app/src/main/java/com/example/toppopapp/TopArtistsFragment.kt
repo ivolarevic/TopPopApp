@@ -3,6 +3,7 @@ package com.example.toppopapp
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -37,6 +38,7 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
     lateinit var  sharedPref : SharedPreferences
     private lateinit var db : ArtistRoomDatabase
     private lateinit var artistDao : ArtistDao
+    private var cnt : Int = 0
 
     // Flags for sorting
     private var sortAsc:Boolean = false
@@ -124,6 +126,8 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
 
     private fun saveInformation(data: List<Data>){
         artistsList.clear()
+        artistsTmpList.clear()
+
         for (i in data.indices) {
             val artist = Artist(
                 position = data[i].position,
@@ -152,8 +156,13 @@ class TopArtistsFragment : Fragment(), InterfaceCard {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        db.close()
         _binding = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        artistDao.deleteTopArtists()
+        db.close()
     }
 }
 

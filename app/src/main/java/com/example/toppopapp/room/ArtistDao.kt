@@ -9,4 +9,7 @@ interface ArtistDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertArtists(artist: MutableList<Artist>)
+
+    @Query("DELETE FROM artist")
+    fun deleteTopArtists()
 }

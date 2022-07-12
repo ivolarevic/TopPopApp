@@ -2,6 +2,7 @@ package com.example.toppopapp
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -104,7 +105,11 @@ class AlbumDetailsFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        db.close()
         _binding = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        db.close()
     }
 }
