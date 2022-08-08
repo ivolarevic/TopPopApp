@@ -1,7 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.toppopapp.MainActivity">
+    tools:context="com.example.toppopapp.ui.MainActivity">
+    <item android:id="@+id/action_switch_layout"
+        android:icon="@drawable/ic_baseline_music_note_24"
+        app:showAsAction="always"
+        android:title="Menu" />
     <item
         android:id="@+id/action_asc"
         android:title="@string/asc_sort"

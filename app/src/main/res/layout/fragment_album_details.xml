@@ -6,7 +6,7 @@
         android:layout_height="match_parent"
         android:padding="16dp"
         android:background="@color/black"
-        tools:context=".AlbumDetailsFragment">
+        tools:context=".ui.AlbumDetailsFragment">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"

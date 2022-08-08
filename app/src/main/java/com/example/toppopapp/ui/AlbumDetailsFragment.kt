@@ -1,37 +1,19 @@
-package com.example.toppopapp
+package com.example.toppopapp.ui
 
-import android.content.Context
-import android.content.SharedPreferences
-import android.os.AsyncTask
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
-import androidx.room.Room
-import com.example.toppopapp.databinding.FragmentAlbumDetailsBinding
-import com.example.toppopapp.network.RetrofitApiCall
-import com.example.toppopapp.room.Album
-import com.example.toppopapp.room.AlbumRoomDatabase
-import com.example.toppopapp.network.model.AlbumDetails
-import com.example.toppopapp.network.model.Tracks
-import com.example.toppopapp.room.AlbumDao
-import com.example.toppopapp.viewmodel.AlbumDetailsViewModel
-import com.squareup.picasso.Picasso
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AlbumDetailsFragment : Fragment() {
 
-    private var _binding: FragmentAlbumDetailsBinding? = null
+    /*private var _binding: FragmentAlbumDetailsBinding? = null
     private val albumViewModel : AlbumDetailsViewModel by activityViewModels()
-    private lateinit var model : RetrofitApiCall
     lateinit var  sharedPref : SharedPreferences
 
     private var artistID: Int = 0
     private var idAlbum: Long = 0
     private val binding get() = _binding!!
-    private lateinit var songs : String
+    private var songs : String = ""
     private lateinit var db : AlbumRoomDatabase
     private lateinit var albumDao : AlbumDao
 
@@ -45,9 +27,8 @@ class AlbumDetailsFragment : Fragment() {
         initDatabase()
         setLiveDataListeners()
 
-        model =  RetrofitApiCall()
-        albumViewModel.getAlbumTracks(model)
-        albumViewModel.getAlbumDetails(model)
+        albumViewModel.getAlbumTracks()
+        albumViewModel.getAlbumDetails()
 
         return binding.root
     }
@@ -61,13 +42,13 @@ class AlbumDetailsFragment : Fragment() {
     }
 
     private fun setLiveDataListeners(){
-        albumViewModel.albumTracks.observe(viewLifecycleOwner, Observer{
+        albumViewModel.albumTracks.observe(viewLifecycleOwner) {
             setTrackInformation(it)
-        })
+        }
 
-        albumViewModel.albumDetails.observe(viewLifecycleOwner, Observer{
+        albumViewModel.albumDetails.observe(viewLifecycleOwner){
             setInformation(it)
-        })
+        }
     }
 
     private fun setTrackInformation(data: AlbumDetails){
@@ -111,5 +92,5 @@ class AlbumDetailsFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         db.close()
-    }
+    }*/
 }
