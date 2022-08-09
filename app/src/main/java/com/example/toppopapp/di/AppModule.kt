@@ -33,11 +33,11 @@ object AppModule {
     fun provideGson(): Gson = GsonBuilder().create()
 
     @Provides
-    fun provideCharacterService(retrofit: Retrofit): ArtistService = retrofit.create(ArtistService::class.java)
+    fun provideArtistService(retrofit: Retrofit): ArtistService = retrofit.create(ArtistService::class.java)
 
     @Singleton
     @Provides
-    fun provideCharacterRemoteDataSource(artistService: ArtistService) = ArtistRemoteDataSource(artistService)
+    fun provideArtistRemoteDataSource(artistService: ArtistService) = ArtistRemoteDataSource(artistService)
 
     @Singleton
     @Provides
@@ -45,7 +45,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideCharacterDao(db: AppDatabase) = db.artistDao()
+    fun provideArtistDao(db: AppDatabase) = db.artistDao()
 
     @Singleton
     @Provides

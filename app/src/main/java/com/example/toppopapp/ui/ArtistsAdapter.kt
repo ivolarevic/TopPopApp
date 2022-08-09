@@ -5,14 +5,16 @@ import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.toppopapp.R
 import com.example.toppopapp.data.entities.Artist
+import com.example.toppopapp.databinding.CardLayoutBinding
 
 
-class ArtistsAdapter() : RecyclerView.Adapter<ArtistsAdapter.MyViewHolder>() {
+class ArtistsAdapter() : RecyclerView.Adapter<ArtistViewHolder>() {
+
+    interface ArtistItemListener {
+        fun onClickedArtist(characterId: Int)
+    }
 
     private val items = ArrayList<Artist>()
 
@@ -22,32 +24,35 @@ class ArtistsAdapter() : RecyclerView.Adapter<ArtistsAdapter.MyViewHolder>() {
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.card_layout, parent, false)
-        return MyViewHolder(itemView)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArtistViewHolder {
+        val binding: CardLayoutBinding = CardLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ArtistViewHolder(binding)
     }
 
-    override fun getItemCount(): Int {
-        return items.size
+    override fun getItemCount(): Int = items.size
+
+    override fun onBindViewHolder(holder: ArtistViewHolder, position: Int) = holder.bind(items[position])
+}
+
+class ArtistViewHolder(private val itemBinding: CardLayoutBinding) : RecyclerView.ViewHolder(itemBinding.root),
+    View.OnClickListener {
+
+    private lateinit var artist: Artist
+
+    init {
+        itemBinding.root.setOnClickListener(this)
     }
 
-    class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var artistName: TextView = view.findViewById(R.id.artistName)
-        var songName : TextView = view.findViewById(R.id.songName)
-        var songDuration : TextView = view.findViewById(R.id.songDuration)
-        var songNumber : TextView = view.findViewById(R.id.songNumber)
-        var card : CardView = view.findViewById(R.id.card_view)
-    }
-
-
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val item = items[position]
-        holder.artistName.text = item.artistName
-        holder.songName.text = item.title
-        holder.songNumber.text = item.position.toString()
-        holder.songDuration.text = DateUtils.formatElapsedTime(item.duration.toLong())
+    fun bind(item: Artist) {
+        this.artist = item
+        itemBinding.artistName.text = "name"
+        itemBinding.songDuration.text = DateUtils.formatElapsedTime(item.duration.toLong())
+        itemBinding.songNumber.text = item.position.toString()
+        itemBinding.songName.text = item.title
 
     }
 
-
+    override fun onClick(v: View?) {
+        //listener.onClickedArtist(artist.id)
+    }
 }

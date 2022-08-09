@@ -10,8 +10,10 @@ abstract class BaseDataSource {
             val response = call()
             if (response.isSuccessful) {
                 val body = response.body()
+                Timber.tag("retrofit").d(response.body().toString())
                 if (body != null) return Resource.success(body)
             }
+            Timber.d(response.message().toString())
             return error(" ${response.code()} ${response.message()}")
         } catch (e: Exception) {
             return error(e.message ?: e.toString())

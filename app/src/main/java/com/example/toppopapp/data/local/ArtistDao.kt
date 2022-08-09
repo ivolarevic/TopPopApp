@@ -13,7 +13,7 @@ interface ArtistDao {
     fun getAllArtists(): LiveData<List<Artist>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertArtists(artist: Artist)
+    fun insertArtists(artist: List<Artist>)
 
     @Query("DELETE FROM artist")
     fun deleteTopArtists()

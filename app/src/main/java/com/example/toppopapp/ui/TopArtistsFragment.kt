@@ -3,12 +3,12 @@ package com.example.toppopapp.ui
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.toppopapp.R
@@ -16,7 +16,6 @@ import com.example.toppopapp.databinding.FragmentTopArtistsBinding
 import com.example.toppopapp.ui.viewmodel.TopArtistsViewModel
 import com.example.toppopapp.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
-
 
 @AndroidEntryPoint
 class TopArtistsFragment : Fragment() {
@@ -27,7 +26,7 @@ class TopArtistsFragment : Fragment() {
     private val viewModel : TopArtistsViewModel by activityViewModels()
     private val binding get() = _binding!!
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
-    lateinit var  sharedPref : SharedPreferences
+    lateinit var sharedPref : SharedPreferences
 
     private var menuItem: MenuItem ?= null
 
@@ -42,23 +41,25 @@ class TopArtistsFragment : Fragment() {
         sharedPref = activity?.getSharedPreferences("MyPref", Context.MODE_PRIVATE) ?: return
         swipeRefreshLayout = binding.swipeRefresh
 
-        setAdapter()
+
+        setupRecyclerView()
         setupObservers()
         initListeners()
     }
 
-    private fun setAdapter(){
+    private fun setupRecyclerView() {
         adapter = ArtistsAdapter()
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        binding.recyclerView.adapter = adapter
-
+        binding.rvArtist.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvArtist.adapter = adapter
     }
 
     private fun setupObservers(){
-        viewModel.artists.observe(viewLifecycleOwner, Observer {
+        viewModel.artists.observe(viewLifecycleOwner) {
             when (it.status) {
                 Resource.Status.SUCCESS -> {
                     if (!it.data.isNullOrEmpty()) adapter.setItems(ArrayList(it.data))
+                    Log.d("list", it.data.toString())
+                    adapter.notifyDataSetChanged()
                 }
                 Resource.Status.ERROR ->
                     Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
@@ -66,7 +67,7 @@ class TopArtistsFragment : Fragment() {
                 Resource.Status.LOADING ->
                     Toast.makeText(requireContext(), "Loading", Toast.LENGTH_SHORT).show()
             }
-        })
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -91,6 +92,8 @@ class TopArtistsFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
     }
+
+
 }
 
 
