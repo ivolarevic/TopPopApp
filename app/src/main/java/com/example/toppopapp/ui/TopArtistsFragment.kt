@@ -54,11 +54,24 @@ class TopArtistsFragment : Fragment() {
     }
 
     private fun setupObservers(){
-        viewModel.artists.observe(viewLifecycleOwner) {
+        viewModel.artist.observe(viewLifecycleOwner) {
             when (it.status) {
                 Resource.Status.SUCCESS -> {
-                    if (!it.data.isNullOrEmpty()) adapter.setItems(ArrayList(it.data))
-                    Log.d("list", it.data.toString())
+                    if (!it.data.isNullOrEmpty()) adapter.setArtistItems(ArrayList(it.data))
+                    adapter.notifyDataSetChanged()
+                }
+                Resource.Status.ERROR ->
+                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+
+                Resource.Status.LOADING ->
+                    Toast.makeText(requireContext(), "Loading", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        viewModel.songs.observe(viewLifecycleOwner){
+            when (it.status) {
+                Resource.Status.SUCCESS -> {
+                    if (!it.data.isNullOrEmpty()) adapter.setSongItems(ArrayList(it.data))
                     adapter.notifyDataSetChanged()
                 }
                 Resource.Status.ERROR ->
@@ -92,9 +105,4 @@ class TopArtistsFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
     }
-
-
 }
-
-
-

@@ -1,6 +1,6 @@
 package com.example.toppopapp.data.entities
 
-data class ArtistList (
-    val data: List<Artist>,
+data class SongList (
+    val data: List<Song>,
     val total: Int
 )

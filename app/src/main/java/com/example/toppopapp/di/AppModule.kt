@@ -13,6 +13,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -24,14 +26,33 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideRetrofit(gson: Gson) : Retrofit = Retrofit.Builder()
+    fun provideInterceptor(): HttpLoggingInterceptor {
+        return HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+    }
+
+    @Singleton
+    @Provides
+    fun provideRetrofitClient(interceptor: HttpLoggingInterceptor): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(interceptor)
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideRetrofit(gson: Gson, client: OkHttpClient) : Retrofit = Retrofit.Builder()
+            // base url
+            //build config
         .baseUrl("https://api.deezer.com")
+        .client(client)
         .addConverterFactory(GsonConverterFactory.create(gson))
         .build()
 
+    @Singleton
     @Provides
     fun provideGson(): Gson = GsonBuilder().create()
 
+    @Singleton
     @Provides
     fun provideArtistService(retrofit: Retrofit): ArtistService = retrofit.create(ArtistService::class.java)
 

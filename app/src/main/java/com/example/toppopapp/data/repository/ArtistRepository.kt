@@ -8,7 +8,13 @@ import javax.inject.Inject
 class ArtistRepository @Inject constructor (private val remoteDataSource: ArtistRemoteDataSource, private val localDataSource: ArtistDao) {
     fun getArtist() = performGetOperation(
         databaseQuery = { localDataSource.getAllArtists() },
-        networkCall = { remoteDataSource.getArtist() },
-        saveCallResult = { localDataSource.insertArtists(it.data) }
+        networkCall = { remoteDataSource.getArtists() },
+        saveCallResult = { localDataSource.insertArtist(it.data) }
+    )
+
+    fun getSong() = performGetOperation(
+        databaseQuery = { localDataSource.getAllSongs() },
+        networkCall = { remoteDataSource.getSong() },
+        saveCallResult = { localDataSource.insertSongs(it.data) }
     )
 }

@@ -8,5 +8,7 @@ class TopArtistsViewModel @ViewModelInject constructor(
     private val repository: ArtistRepository
 ) : ViewModel() {
 
-    val artists = repository.getArtist()
+    val songs = repository.getSong()
+    val artist = repository.getArtist()
+
 }
