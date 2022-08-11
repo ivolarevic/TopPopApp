@@ -6,24 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.toppopapp.data.entities.Artist
-import com.example.toppopapp.data.entities.Song
+import com.example.toppopapp.data.entities.Data
 import com.example.toppopapp.databinding.CardLayoutBinding
 
 
-class ArtistsAdapter() : RecyclerView.Adapter<ArtistViewHolder>() {
-    private val songItems = ArrayList<Song>()
-    private val artistItems = ArrayList<Artist>()
+class ArtistsAdapter : RecyclerView.Adapter<ArtistViewHolder>() {
+    private val dataItems = ArrayList<Data>()
 
-    fun setArtistItems(items: ArrayList<Artist>) {
-        this.artistItems.clear()
-        this.artistItems.addAll(items)
-        notifyDataSetChanged()
-    }
-
-    fun setSongItems(items: ArrayList<Song>) {
-        this.songItems.clear()
-        this.songItems.addAll(items)
+    fun setSongItems(items: ArrayList<Data>) {
+        this.dataItems.clear()
+        this.dataItems.addAll(items)
         notifyDataSetChanged()
     }
 
@@ -32,34 +24,27 @@ class ArtistsAdapter() : RecyclerView.Adapter<ArtistViewHolder>() {
         return ArtistViewHolder(binding)
     }
 
-    override fun getItemCount(): Int = artistItems.size
+    override fun getItemCount(): Int = dataItems.size
 
-    override fun onBindViewHolder(holder: ArtistViewHolder, position: Int) = holder.bind(artistItems[position])
+    override fun onBindViewHolder(holder: ArtistViewHolder, position: Int) = holder.bind(dataItems[position], position)
 }
 
 class ArtistViewHolder(private val itemBinding: CardLayoutBinding) : RecyclerView.ViewHolder(itemBinding.root),
     View.OnClickListener {
 
-    private lateinit var song: Song
-    private lateinit var artist: Artist
+    private lateinit var data: Data
 
     init {
         itemBinding.root.setOnClickListener(this)
     }
 
-    fun bind(item: Artist) {
-        this.artist = item
-        itemBinding.artistName.text = item.name
-
+    fun bind(item: Data, position: Int) {
+        this.data = item
+        itemBinding.artistName.text = item.data[position].artist.name
+        itemBinding.songDuration.text = DateUtils.formatElapsedTime(item.data[position].duration.toLong())
+        itemBinding.songNumber.text = item.data[position].position.toString()
+        itemBinding.songName.text = item.data[position].title
     }
-
-    fun bind(item: Song) {
-        this.song = item
-        itemBinding.songDuration.text = DateUtils.formatElapsedTime(item.duration.toLong())
-        itemBinding.songNumber.text = item.position.toString()
-        itemBinding.songName.text = item.title
-    }
-
 
     override fun onClick(v: View?) {
         //listener.onClickedArtist(artist.id)

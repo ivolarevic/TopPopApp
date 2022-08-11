@@ -16,6 +16,7 @@ import com.example.toppopapp.databinding.FragmentTopArtistsBinding
 import com.example.toppopapp.ui.viewmodel.TopArtistsViewModel
 import com.example.toppopapp.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class TopArtistsFragment : Fragment() {
@@ -41,10 +42,14 @@ class TopArtistsFragment : Fragment() {
         sharedPref = activity?.getSharedPreferences("MyPref", Context.MODE_PRIVATE) ?: return
         swipeRefreshLayout = binding.swipeRefresh
 
-
         setupRecyclerView()
         setupObservers()
         initListeners()
+    }
+
+    override fun onResume() {
+        viewModel.getSongs()
+        super.onResume()
     }
 
     private fun setupRecyclerView() {
@@ -54,31 +59,12 @@ class TopArtistsFragment : Fragment() {
     }
 
     private fun setupObservers(){
-        viewModel.artist.observe(viewLifecycleOwner) {
-            when (it.status) {
-                Resource.Status.SUCCESS -> {
-                    if (!it.data.isNullOrEmpty()) adapter.setArtistItems(ArrayList(it.data))
-                    adapter.notifyDataSetChanged()
-                }
-                Resource.Status.ERROR ->
-                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+        viewModel.getInformation().observe(viewLifecycleOwner){
+            if(it != null){
+                Timber.d("success: $it")
 
-                Resource.Status.LOADING ->
-                    Toast.makeText(requireContext(), "Loading", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        viewModel.songs.observe(viewLifecycleOwner){
-            when (it.status) {
-                Resource.Status.SUCCESS -> {
-                    if (!it.data.isNullOrEmpty()) adapter.setSongItems(ArrayList(it.data))
-                    adapter.notifyDataSetChanged()
-                }
-                Resource.Status.ERROR ->
-                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
-
-                Resource.Status.LOADING ->
-                    Toast.makeText(requireContext(), "Loading", Toast.LENGTH_SHORT).show()
+            }else{
+                Timber.d("error")
             }
         }
     }

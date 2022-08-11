@@ -1,8 +1,7 @@
 package com.example.toppopapp.di
 
 import android.content.Context
-import com.example.toppopapp.data.local.AppDatabase
-import com.example.toppopapp.data.local.ArtistDao
+import com.example.toppopapp.data.local.*
 import com.example.toppopapp.data.remote.ArtistRemoteDataSource
 import com.example.toppopapp.data.remote.ArtistService
 import com.example.toppopapp.data.repository.ArtistRepository
@@ -70,7 +69,15 @@ object AppModule {
 
     @Singleton
     @Provides
+    fun provideAlbumDao(db: AppDatabase) = db.albumDao()
+
+    @Singleton
+    @Provides
+    fun provideSongDao(db: AppDatabase) = db.songDao()
+
+    @Singleton
+    @Provides
     fun provideRepository(remoteDataSource: ArtistRemoteDataSource,
-                          localDataSource: ArtistDao) =
-        ArtistRepository(remoteDataSource, localDataSource)
+                          songDao: SongDao, artistDao: ArtistDao, albumDao: AlbumDao) =
+        ArtistRepository(remoteDataSource, songDao, artistDao, albumDao)
 }
