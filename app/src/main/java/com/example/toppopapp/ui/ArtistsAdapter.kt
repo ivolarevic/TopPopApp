@@ -6,14 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.toppopapp.data.entities.ArtistDetailsWithSong
 import com.example.toppopapp.data.entities.Data
 import com.example.toppopapp.databinding.CardLayoutBinding
 
 
 class ArtistsAdapter : RecyclerView.Adapter<ArtistViewHolder>() {
-    private val dataItems = ArrayList<Data>()
+    private val dataItems = ArrayList<ArtistDetailsWithSong>()
 
-    fun setSongItems(items: ArrayList<Data>) {
+    fun setSongItems(items: ArrayList<ArtistDetailsWithSong>) {
         this.dataItems.clear()
         this.dataItems.addAll(items)
         notifyDataSetChanged()
@@ -32,18 +33,18 @@ class ArtistsAdapter : RecyclerView.Adapter<ArtistViewHolder>() {
 class ArtistViewHolder(private val itemBinding: CardLayoutBinding) : RecyclerView.ViewHolder(itemBinding.root),
     View.OnClickListener {
 
-    private lateinit var data: Data
+    private lateinit var data: ArtistDetailsWithSong
 
     init {
         itemBinding.root.setOnClickListener(this)
     }
 
-    fun bind(item: Data, position: Int) {
+    fun bind(item: ArtistDetailsWithSong, position: Int) {
         this.data = item
-        itemBinding.artistName.text = item.data[position].artist.name
-        itemBinding.songDuration.text = DateUtils.formatElapsedTime(item.data[position].duration.toLong())
-        itemBinding.songNumber.text = item.data[position].position.toString()
-        itemBinding.songName.text = item.data[position].title
+        itemBinding.artistName.text = item.artistDetails.name
+        itemBinding.songDuration.text = DateUtils.formatElapsedTime(item.song.duration.toLong())
+        itemBinding.songNumber.text = item.song.position.toString()
+        itemBinding.songName.text = item.song.title
     }
 
     override fun onClick(v: View?) {

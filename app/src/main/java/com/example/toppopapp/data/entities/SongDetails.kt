@@ -1,7 +1,7 @@
 package com.example.toppopapp.data.entities
 
 data class SongDetails(
-    val id: Int,
+    val id: Long,
     val title: String,
     val position : Int,
     val duration : Int,

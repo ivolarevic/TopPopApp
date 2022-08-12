@@ -1,6 +1,7 @@
 package com.example.toppopapp.data.entities
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.example.toppopapp.data.local.AppDatabase
 import com.google.gson.annotations.SerializedName
@@ -9,5 +10,5 @@ import com.google.gson.annotations.SerializedName
 data class ArtistDetails(
     @PrimaryKey
     val id: Long,
-    val name: String,
+    val name: String?,
 )

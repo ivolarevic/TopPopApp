@@ -1,17 +1,16 @@
 package com.example.toppopapp.data.entities
 
 import androidx.room.Embedded
-import androidx.room.Entity
 import androidx.room.Junction
 import androidx.room.Relation
 
-data class SongWithArtistDetails (
-    @Embedded val artistDetails: ArtistDetails,
+data class ArtistDetailsWithSong (
+    @Embedded val song: Song,
     @Relation(
-        parentColumn = "id",
-        entityColumn = "songId",
+        parentColumn = "songId",
+        entityColumn = "id",
         associateBy = Junction(SongArtistDetailsCrossRef::class)
     )
-    val song: Song
+    val artistDetails: ArtistDetails
 
 )

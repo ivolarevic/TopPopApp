@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName
 @Entity(tableName = AppDatabase.TablesInfo.TABLE_SONG)
 data class Song(
     @PrimaryKey
-    val songId: Int,
+    val songId: Long,
     val title: String,
     val position : Int,
     val duration : Int,

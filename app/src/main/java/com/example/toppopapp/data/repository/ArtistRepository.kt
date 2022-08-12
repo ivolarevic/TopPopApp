@@ -44,6 +44,7 @@ class ArtistRepository @Inject constructor (private val remoteDataSource: Artist
                     id = data.artist.id,
                 )
             )
+
         }
         // COROUTINE
         //appDatabase.runInTransaction {
@@ -56,5 +57,5 @@ class ArtistRepository @Inject constructor (private val remoteDataSource: Artist
         //}
     }
 
-    fun getSongLocal() : LiveData<List<SongWithArtistDetails>> = songDao.getArtistWithSong()
+    fun getSongLocal() : LiveData<List<ArtistDetailsWithSong>> = songDao.getArtistWithSong()
 }

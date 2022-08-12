@@ -12,6 +12,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.toppopapp.R
+import com.example.toppopapp.data.entities.ArtistDetailsWithSong
 import com.example.toppopapp.databinding.FragmentTopArtistsBinding
 import com.example.toppopapp.ui.viewmodel.TopArtistsViewModel
 import com.example.toppopapp.utils.Resource
@@ -30,6 +31,12 @@ class TopArtistsFragment : Fragment() {
     lateinit var sharedPref : SharedPreferences
 
     private var menuItem: MenuItem ?= null
+
+    private var artistList : MutableList<ArtistDetailsWithSong> = mutableListOf()
+
+    private var sortAsc:Boolean = false
+    private var sortDesc:Boolean = false
+    private var sortNorm : Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentTopArtistsBinding.inflate(inflater, container, false)
@@ -61,8 +68,9 @@ class TopArtistsFragment : Fragment() {
     private fun setupObservers(){
         viewModel.getInformation().observe(viewLifecycleOwner){
             if(it != null){
-                Timber.d("success: $it")
-
+                artistList = it.toMutableList()
+                artistList.sortBy { it -> it.song.position }
+                adapter.setSongItems(ArrayList(artistList))
             }else{
                 Timber.d("error")
             }
@@ -76,10 +84,37 @@ class TopArtistsFragment : Fragment() {
         )
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_asc -> sortAsc = true
+            R.id.action_desc -> sortDesc = true
+            R.id.action_normal -> sortNorm = true
+            else -> super.onOptionsItemSelected(item)
+        }
+        sortSongs()
+        return true
+    }
+
+    private fun sortSongs(){
+        if(sortAsc){
+            artistList.sortBy { it.song.duration }
+            sortAsc = false
+        }else if(sortDesc){
+            artistList.sortByDescending { it.song.duration }
+            sortDesc = false
+        }else if(sortNorm){
+            artistList.sortBy { it.song.position }
+            sortNorm = false
+        }
+        adapter.setSongItems(ArrayList(artistList))
+    }
+
+
     private fun initListeners(){
         swipeRefreshLayout!!.setOnRefreshListener {
             swipeRefreshLayout!!.isRefreshing = false
-            //artistsList.sortBy { it.position }
+            artistList.sortBy { it.song.position }
+            adapter.notifyDataSetChanged()
         }
     }
 
